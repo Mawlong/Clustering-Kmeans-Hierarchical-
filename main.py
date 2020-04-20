@@ -13,7 +13,7 @@ def plotter(plus, rand):
       plt.title("Comparison of Silhouette Analysis")
       plt.draw()
       plt.pause(0.001)
-      plt.savefig('./figurePlots/randVsKMeansPP.png')
+      plt.savefig('.\figurePlots\randVsKMeansPP.png')
 
 
 def plotterAgg(o1,o2,o3):
@@ -23,7 +23,7 @@ def plotterAgg(o1,o2,o3):
       plt.title("Comparison of Silhouette Analysis")
       plt.draw()
       plt.pause(0.001)
-      plt.savefig('./figurePlots/AgglomerativeHierarchical.png')
+      plt.savefig('.\figurePlots\AgglomerativeHierarchical.png')
 
 
 def clusterMenu():
@@ -159,7 +159,7 @@ if __name__ == '__main__':
       about.intoduction()
 
       #Reading the dataset
-      df = pd.read_csv("./dataset/dataset.csv")
+      df = pd.read_csv(".\dataset\dataset.csv")
 
       #scalling the Dataset
       scaler = MinMaxScaler()

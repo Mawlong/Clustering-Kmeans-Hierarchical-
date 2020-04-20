@@ -7,7 +7,7 @@ def kmpp(df,k=2):
     predicted = km.fit_predict(df)
     df['cluster'] = predicted
     kmppCSV = df.copy()
-    kmppCSV.to_csv("./generatedCSV/kmppCSV.csv", index=False, header=True)
+    kmppCSV.to_csv(".\generatedCSV\kmppCSV.csv", index=False, header=True)
     labelsR = km.labels_
     print("K-means++ initialisation Silhouette Analysis: ", metrics.silhouette_score(df, labelsR, metric='euclidean'))
     return(metrics.silhouette_score(df, labelsR, metric='euclidean'))
@@ -17,7 +17,7 @@ def kmrand(df,k=2):
     predicted = km.fit_predict(df)
     df['cluster'] = predicted
     kmRandCSV = df.copy()
-    kmRandCSV.to_csv("./generatedCSV/kmRandCSV.csv", index=False, header=True)
+    kmRandCSV.to_csv(".\generatedCSV\kmRandCSV.csv", index=False, header=True)
     labelsR = km.labels_
     print("Random initialisation Silhouette Analysis: ", metrics.silhouette_score(df, labelsR, metric='euclidean'))
     return (metrics.silhouette_score(df, labelsR, metric='euclidean'))
@@ -51,6 +51,6 @@ def elbow(df):
     plt.draw()
     plt.pause(0.001)
     input("Press [enter] to continue.")
-    plt.savefig('./figurePlots/elbow.png')
+    plt.savefig('.\figurePlots\elbow.png')
 
     print("\n\n***********************************************************************************")

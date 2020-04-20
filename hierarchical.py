@@ -8,7 +8,7 @@ def singleLinkage(df,k=2):
     clusteringFinal = clustering.fit_predict(df)
     df['cluster'] = clusteringFinal
     singleLinkageCSV = df.copy()
-    singleLinkageCSV.to_csv("./generatedCSV/singleLinkageCSV.csv", index = False, header=True)
+    singleLinkageCSV.to_csv(".\generatedCSV\singleLinkageCSV.csv", index = False, header=True)
     return(score_avg)
 
 def completeLinkage(df,k=2):
@@ -18,7 +18,7 @@ def completeLinkage(df,k=2):
     clusteringFinal = clustering.fit_predict(df)
     df['cluster'] = clusteringFinal
     completeLinkageCSV = df.copy()
-    completeLinkageCSV.to_csv("./generatedCSV/completeLinkageCSV.csv", index=False, header=True)
+    completeLinkageCSV.to_csv(".\generatedCSV\completeLinkageCSV.csv", index=False, header=True)
     return (score_avg)
 
 def averageLinkage(df,k=2):
@@ -28,5 +28,5 @@ def averageLinkage(df,k=2):
     clusteringFinal = clustering.fit_predict(df)
     df['cluster'] = clusteringFinal
     averageLinkageCSV = df.copy()
-    averageLinkageCSV.to_csv("./generatedCSV/averageLinkageCSV.csv", index=False, header=True)
+    averageLinkageCSV.to_csv(".\generatedCSV\averageLinkageCSV.csv", index=False, header=True)
     return (score_avg)
