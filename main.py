@@ -55,7 +55,7 @@ def elbow(df):
     ax2.set(xlabel='number of clusters K', ylabel='K-means++')
     plt.draw()
     plt.pause(0.001)
-    plt.savefig('.\figurePlots\elbow.png')
+    plt.savefig('elbow.png')
 
     print("\n\n***********************************************************************************")
 
@@ -219,7 +219,7 @@ if __name__ == '__main__':
       about.intoduction()
 
       #Reading the dataset
-      df = pd.read_csv("dataset.csv")
+      df = pd.read_csv("https://dataset-ten.now.sh/dataset.csv")
 
       #scalling the Dataset
       scaler = MinMaxScaler()
