@@ -1,30 +1,90 @@
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 from matplotlib import pyplot as plt
-import hierarchical as h
+from sklearn.cluster import KMeans
+from sklearn import metrics
+from sklearn.cluster import AgglomerativeClustering
+from sklearn.metrics import silhouette_score
 import about as about
-import kmeans as km
 
+def kmpp(df,k=2):
+    km = KMeans(n_clusters=k, init='k-means++')
+    predicted = km.fit_predict(df)
+    df['cluster'] = predicted
+    kmppCSV = df.copy()
+    kmppCSV.to_csv(".\generatedCSV\kmppCSV.csv", index=False, header=True)
+    labelsR = km.labels_
+    print("K-means++ initialisation Silhouette Analysis: ", metrics.silhouette_score(df, labelsR, metric='euclidean'))
+    return(metrics.silhouette_score(df, labelsR, metric='euclidean'))
 
-def plotter(plus, rand):
-      values = [plus,rand]
-      label = ['K-means++', 'Random']
-      plt.bar(label,values)
-      plt.title("Comparison of Silhouette Analysis")
-      plt.draw()
-      plt.pause(0.001)
-      plt.savefig('.\figurePlots\randVsKMeansPP.png')
+def kmrand(df,k=2):
+    km = KMeans(n_clusters=k, init='random')
+    predicted = km.fit_predict(df)
+    df['cluster'] = predicted
+    kmRandCSV = df.copy()
+    kmRandCSV.to_csv(".\generatedCSV\kmRandCSV.csv", index=False, header=True)
+    labelsR = km.labels_
+    print("Random initialisation Silhouette Analysis: ", metrics.silhouette_score(df, labelsR, metric='euclidean'))
+    return (metrics.silhouette_score(df, labelsR, metric='euclidean'))
 
+def elbow(df):
 
-def plotterAgg(o1,o2,o3):
-      values = [o1,o2,o3]
-      label = ['Single', 'Complete', 'Group Average']
-      plt.bar(label,values)
-      plt.title("Comparison of Silhouette Analysis")
-      plt.draw()
-      plt.pause(0.001)
-      plt.savefig('.\figurePlots\AgglomerativeHierarchical.png')
+    print("\n\n\nElbow Method visualisation using SSE")
 
+    sseR = []
+    sse = []
+    k_rng = range(1, 10)
+
+    for k in k_rng:
+        kmR = KMeans(n_clusters=k, init='random')
+        km = KMeans(n_clusters=k, init='k-means++')
+        kmR.fit_predict(df)
+        sseR.append(kmR.inertia_)
+        km.fit_predict(df)
+        sse.append(km.inertia_)
+        print('Cluster(Random init):\t ', (k + 1), '| Inertia(SSE):', kmR.inertia_)
+        print('Cluster(k-means++ init): ', (k + 1), '| Inertia(SSE):', km.inertia_)
+        print('Random is better\n' if kmR.inertia_ >= km.inertia_ else 'k-means++ is better\n')
+
+    print("The corresponding graphs are shown in the figure generated.")
+
+    fig, (ax1, ax2) = plt.subplots(2, sharey=True)
+    ax1.plot(k_rng, sseR, 'ko-')
+    ax1.set(title='Elbow Method', ylabel='Random')
+    ax2.plot(k_rng, sse, 'ko-')
+    ax2.set(xlabel='number of clusters K', ylabel='K-means++')
+    plt.draw()
+    plt.pause(0.001)
+    plt.savefig('.\figurePlots\elbow.png')
+
+    print("\n\n***********************************************************************************")
+
+def singleLinkage(df,k=2):
+    print("\nHierarchical Clustering using single linkage\n")
+    clustering = AgglomerativeClustering(n_clusters = k, linkage='single' ).fit(df)
+    score_avg = silhouette_score(df, clustering.labels_)
+    clusteringFinal = clustering.fit_predict(df)
+    df['cluster'] = clusteringFinal
+    print(df.head())
+    return(score_avg)
+
+def completeLinkage(df,k=2):
+    print("\nHierarchical Clustering using complete linkage\n")
+    clustering = AgglomerativeClustering(n_clusters=k, linkage='complete').fit(df)
+    score_avg = silhouette_score(df, clustering.labels_)
+    clusteringFinal = clustering.fit_predict(df)
+    df['cluster'] = clusteringFinal
+    print(df.head())
+    return (score_avg)
+
+def averageLinkage(df,k=2):
+    print("\nHierarchical Clustering using average linkage\n")
+    clustering = AgglomerativeClustering(n_clusters=k, linkage='average').fit(df)
+    score_avg = silhouette_score(df, clustering.labels_)
+    clusteringFinal = clustering.fit_predict(df)
+    df['cluster'] = clusteringFinal
+    print(df.head())
+    return (score_avg)
 
 def clusterMenu():
       check = int(1)
@@ -46,7 +106,7 @@ def clusterMenu():
                         print("Would you like to view the dataset using the elbow method to determine the number of clusters? (yes = 1, no = 0)")
                         kchoice = int(input().strip())
                         if(kchoice == 1):
-                              km.elbow(df_scaled)
+                              elbow(df_scaled)
 
                         print("\n\n Which method of cluster initialisation to view?"
                               "\n\t1. k-means++"
@@ -58,20 +118,20 @@ def clusterMenu():
                         clusters = int(input().strip())
 
                         if(kchoice == 1):
-                              kplusplus = km.kmpp(df_scaled,clusters)
+                              kplusplus = kmpp(df_scaled,clusters)
                               print("\n\nWould you like to see for Random as well? (yes = 1, no = 0)")
                               secondChoice = int(input().strip())
                               if(secondChoice == 1):
-                                    krandom = km.kmrand(df_scaled,clusters)
-                                    plotter(kplusplus,krandom)
+                                    krandom = kmrand(df_scaled,clusters)
+                                    
 
                         elif(kchoice == 2):
-                              krandom = km.kmrand(df_scaled,clusters)
+                              krandom = kmrand(df_scaled,clusters)
                               print("Would you like to see for k-means++ as well? (yes = 1, no = 0)")
                               secondChoice = int(input().strip())
                               if (secondChoice == 1):
-                                    kplusplus = km.kmpp(df_scaled, clusters)
-                                    plotter(kplusplus, krandom)
+                                    kplusplus = kmpp(df_scaled, clusters)
+                                    
 
                         elif(kchoice ==3):
                               break
@@ -99,41 +159,41 @@ def clusterMenu():
                         clusters = int(input().strip())
 
                         if(kchoice == 1):
-                              output1 = h.singleLinkage(df_scaled,clusters)
+                              output1 = singleLinkage(df_scaled,clusters)
                               print("silhouette_score: ", output1)
                               print("Would you like to see for Complete and Average as well? (yes = 1, no = 0)")
                               secondChoice = int(input().strip())
                               if (secondChoice == 1):
-                                    output2 = h.completeLinkage(df_scaled,clusters)
+                                    output2 = completeLinkage(df_scaled,clusters)
                                     print("silhouette_score: ", output2)
-                                    output3 = h.averageLinkage(df_scaled, clusters)
+                                    output3 = averageLinkage(df_scaled, clusters)
                                     print("silhouette_score: ", output3)
-                                    plotterAgg(output1,output2,output3)
+                                    
 
                         elif(kchoice == 2):
-                              output2 = h.completeLinkage(df_scaled,clusters)
+                              output2 = completeLinkage(df_scaled,clusters)
                               print("silhouette_score: ", output2)
                               print("Would you like to see for Single and Average as well? (yes = 1, no = 0)")
                               secondChoice = int(input().strip())
                               if (secondChoice == 1):
-                                    output1 = h.singleLinkage(df_scaled, clusters)
+                                    output1 = singleLinkage(df_scaled, clusters)
                                     print("silhouette_score: ", output1)
-                                    output3 = h.averageLinkage(df_scaled, clusters)
+                                    output3 = averageLinkage(df_scaled, clusters)
                                     print("silhouette_score: ", output3)
-                                    plotterAgg(output1, output2, output3)
+                                    
 
 
                         elif(kchoice == 3):
-                              output3 = h.averageLinkage(df_scaled,clusters)
+                              output3 = averageLinkage(df_scaled,clusters)
                               print("silhouette_score: ", output3)
                               print("Would you like to see for Complete and Single as well? (yes = 1, no = 0)")
                               secondChoice = int(input().strip())
                               if (secondChoice == 1):
-                                    output2 = h.completeLinkage(df_scaled, clusters)
+                                    output2 = completeLinkage(df_scaled, clusters)
                                     print("silhouette_score: ", output2)
-                                    output1 = h.singleLinkage(df_scaled, clusters)
+                                    output1 = singleLinkage(df_scaled, clusters)
                                     print("silhouette_score: ", output1)
-                                    plotterAgg(output1, output2, output3)
+                                    
 
                         elif(kchoice == 4):
                               break
@@ -159,7 +219,7 @@ if __name__ == '__main__':
       about.intoduction()
 
       #Reading the dataset
-      df = pd.read_csv(".\dataset\dataset.csv")
+      df = pd.read_csv("dataset.csv")
 
       #scalling the Dataset
       scaler = MinMaxScaler()
